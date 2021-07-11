@@ -1,0 +1,24 @@
+{
+  "extends": [
+    "config:base",
+    ":semanticCommitTypeAll(chore)"
+  ],
+  "ignorePresets": [
+    ":prHourlyLimit2"
+  ],
+  "packageRules": [
+    {
+      "updateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true
+    }
+  ],
+  "ignorePaths": [
+    "api",
+    "gateway"
+  ]
+}
