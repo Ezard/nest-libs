@@ -11,14 +11,9 @@
       "updateTypes": [
         "minor",
         "patch",
-        "pin",
         "digest"
       ],
       "automerge": true
     }
-  ],
-  "ignorePaths": [
-    "api",
-    "gateway"
   ]
 }
