@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-20.04
+        node-version:
+          - 16
+        package:
+          - firebase
+    name: CI (${{ matrix.package }})
+    steps:
+      - name: Configure Git
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Calculate path filters
+        id: filter
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            firebase:
+              - 'firebase/**/*'
+      - name: Setup Node.js for use with actions
+        if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Setup dependency cache
+        if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ matrix.package }}/node_modules
+          key: ${{ matrix.os }}-node-${{ matrix.node-version }}-${{ hashFiles('${{ matrix.package }}/package-lock.json') }}
+      - name: Install dependencies
+        if: ${{ steps.filter.outputs[matrix.package] == 'true' && steps.cache.outputs.cache-hit != 'true' }}
+        run: npm ci
+        working-directory: ${{ matrix.package }}
+      - name: Lint code
+        if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
+        run: npm run lint:code
+        working-directory: ${{ matrix.package }}
+      - name: Lint styling
+        if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
+        run: npm run lint:style
+        working-directory: ${{ matrix.package }}
+      - name: Run unit tests
+        if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
+        run: npm run test:unit:coverage
+        working-directory: ${{ matrix.package }}

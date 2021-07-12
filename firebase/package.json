@@ -1,0 +1,55 @@
+{
+  "name": "@apposing/nest-firebase",
+  "version": "1.0.0",
+  "description": "A basic Nest.js wrapper around the Firebase App instance",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "exports": {
+    "require": "./dist/cjs/index.js",
+    "import": "./dist/esm/index.js",
+    "default": "./dist/esm/index.js"
+  },
+  "types": "dist/types/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc --project tsconfig.build-cjs.json",
+    "build:esm": "tsc --project tsconfig.build-esm.json",
+    "lint": "npm run lint:code && npm run lint:style",
+    "lint:code": "eslint src",
+    "lint:style": "prettier --check src",
+    "test": "npm run test:unit",
+    "test:unit": "jest",
+    "test:unit:coverage": "jest --coverage",
+    "test:unit:watch": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apposing/apposing-nest-libs.git"
+  },
+  "author": "Ben Ezard",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/apposing/apposing-nest-libs/issues"
+  },
+  "homepage": "https://github.com/apposing/apposing-nest-libs/firebase#readme",
+  "peerDependencies": {
+    "@nestjs/common": "^8.0.0",
+    "firebase-admin": "^9.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "8.0.1",
+    "@types/jest": "26.0.24",
+    "@typescript-eslint/eslint-plugin": "4.28.2",
+    "@typescript-eslint/parser": "4.28.2",
+    "eslint": "7.30.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.23.4",
+    "jest": "27.0.6",
+    "prettier": "2.3.2",
+    "rimraf": "3.0.2",
+    "ts-jest": "27.0.3",
+    "typescript": "4.3.5"
+  }
+}
