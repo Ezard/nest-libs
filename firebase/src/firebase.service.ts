@@ -31,65 +31,65 @@ import Storage = storage.Storage;
 
 @Injectable()
 export class FirebaseService implements App {
-  constructor(@Inject(FIREBASE_APP) private readonly app: App) {}
+  constructor(@Inject(FIREBASE_APP) private readonly firebaseApp: App) {}
 
   get name(): string {
-    return this.app.name;
+    return this.firebaseApp.name;
   }
 
   get options(): AppOptions {
-    return this.app.options;
+    return this.firebaseApp.options;
   }
 
   appCheck(): AppCheck {
-    return this.app.appCheck();
+    return this.firebaseApp.appCheck();
   }
 
   auth(): Auth {
-    return this.app.auth();
+    return this.firebaseApp.auth();
   }
 
   database(url?: string): Database {
-    return this.app.database(url);
+    return this.firebaseApp.database(url);
   }
 
   delete(): Promise<void> {
-    return this.app.delete();
+    return this.firebaseApp.delete();
   }
 
   firestore(): Firestore {
-    return this.app.firestore();
+    return this.firebaseApp.firestore();
   }
 
   installations(): Installations {
-    return this.app.installations();
+    return this.firebaseApp.installations();
   }
 
   instanceId(): InstanceId {
-    return this.app.instanceId();
+    return this.firebaseApp.instanceId();
   }
 
   machineLearning(): MachineLearning {
-    return this.app.machineLearning();
+    return this.firebaseApp.machineLearning();
   }
 
   messaging(): Messaging {
-    return this.app.messaging();
+    return this.firebaseApp.messaging();
   }
 
   projectManagement(): ProjectManagement {
-    return this.app.projectManagement();
+    return this.firebaseApp.projectManagement();
   }
 
   remoteConfig(): RemoteConfig {
-    return this.app.remoteConfig();
+    return this.firebaseApp.remoteConfig();
   }
 
   securityRules(): SecurityRules {
-    return this.app.securityRules();
+    return this.firebaseApp.securityRules();
   }
 
   storage(): Storage {
-    return this.app.storage();
+    return this.firebaseApp.storage();
   }
 }

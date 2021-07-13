@@ -11,10 +11,10 @@ export class FirebaseModule {
     return {
       module: FirebaseModule,
       providers: [
-        <ValueProvider<App>>{
+        {
           provide: FIREBASE_APP,
           useValue: initializeApp(options?.appOptions, options?.name),
-        },
+        } as ValueProvider<App>,
         FirebaseService,
       ],
       exports: [FirebaseService],

@@ -19,6 +19,7 @@
     "lint": "npm run lint:code && npm run lint:style",
     "lint:code": "eslint src",
     "lint:style": "prettier --check src",
+    "prepublishOnly": "npm run build",
     "test": "npm run test:unit",
     "test:unit": "jest",
     "test:unit:coverage": "jest --coverage",

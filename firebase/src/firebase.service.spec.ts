@@ -6,7 +6,7 @@ import { FirebaseService } from './firebase.service';
 import App = app.App;
 
 describe('FirebaseService', () => {
-  async function setupFirebaseService(name: string, app: Partial<App>): Promise<FirebaseService> {
+  async function setupFirebaseService(name: string, firebaseApp: Partial<App>): Promise<FirebaseService> {
     const module = await Test.createTestingModule({
       imports: [
         FirebaseModule.forRoot({
@@ -15,7 +15,7 @@ describe('FirebaseService', () => {
       ],
     })
       .overrideProvider(FIREBASE_APP)
-      .useValue(app)
+      .useValue(firebaseApp)
       .compile();
     return module.get(FirebaseService);
   }
