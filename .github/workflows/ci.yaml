@@ -44,7 +44,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ matrix.package }}/node_modules
-          key: ${{ matrix.os }}-node-${{ matrix.node-version }}-${{ hashFiles('${{ matrix.package }}/package-lock.json') }}
+          key: ${{ matrix.os }}-node-${{ matrix.node-version }}-${{ hashFiles(env.PACKAGE_LOCK_PATH) }}
+        env:
+          PACKAGE_LOCK_PATH: ${{ matrix.package }}/package-lock.json
       - name: Setup .npmrc
         if: ${{ steps.filter.outputs[matrix.package] == 'true' && steps.cache.outputs.cache-hit != 'true' }}
         run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
@@ -64,4 +66,8 @@ jobs:
       - name: Run unit tests
         if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
         run: npm run test:unit:coverage
+        working-directory: ${{ matrix.package }}
+      - name: Build
+        if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
+        run: npm run build
         working-directory: ${{ matrix.package }}
