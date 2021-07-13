@@ -10,6 +10,7 @@ export class FirebaseModule {
   static forRoot(options: FirebaseModuleOptions = {}): DynamicModule {
     return {
       module: FirebaseModule,
+      global: true,
       providers: [
         {
           provide: FIREBASE_APP,

@@ -1,0 +1,1 @@
+export const MAX_MESSAGES_PER_CHUNK = 500;
