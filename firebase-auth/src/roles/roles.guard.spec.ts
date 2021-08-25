@@ -7,6 +7,7 @@ import { join } from 'path';
 import supertest from 'supertest';
 import { AuthGuard } from '../auth.guard';
 import { Public } from '../public.decorator';
+import { IgnoreGlobalRole } from './ignore-global-role.decorator';
 import { RequiresRole } from './roles.decorator';
 import { RolesGuard } from './roles.guard';
 
@@ -18,6 +19,12 @@ const practitionerRole = 'practitioner';
 class TestResolver {
   @Query(() => Int)
   unguardedQuery(): number {
+    return 1;
+  }
+
+  @IgnoreGlobalRole()
+  @Query(() => Int)
+  unguardedQueryIgnoringGlobalRole(): number {
     return 1;
   }
 
@@ -43,6 +50,12 @@ function unguardedQuerySuccess(body: unknown): void {
 function unguardedPublicQuerySuccess(body: unknown): void {
   const b = body as { data?: { unguardedPublicQuery: number }; errors?: unknown[] };
   expect(b.data?.unguardedPublicQuery).toEqual(1);
+  expect(b.errors).toBeUndefined();
+}
+
+function unguardedQueryIgnoringGlobalRoleSuccess(body: unknown): void {
+  const b = body as { data?: { unguardedQueryIgnoringGlobalRole: number }; errors?: unknown[] };
+  expect(b.data?.unguardedQueryIgnoringGlobalRole).toEqual(1);
   expect(b.errors).toBeUndefined();
 }
 
@@ -111,6 +124,23 @@ describe('RolesGuard', () => {
       })
       .expect(200)
       .expect(({ body }: { body: unknown }) => unguardedQuerySuccess(body));
+  });
+
+  it('should allow queries to be accessed when both a globally-required role is defined but is ignored for the query', async () => {
+    app.useGlobalGuards(authGuard(), new RolesGuard(app.get(Reflector), adminRole));
+    await app.init();
+    return supertest(app.getHttpServer())
+      .post('/graphql')
+      .send({
+        operationName: null,
+        query: `
+          query {
+            unguardedQueryIgnoringGlobalRole
+          }
+        `,
+      })
+      .expect(200)
+      .expect(({ body }: { body: unknown }) => unguardedQueryIgnoringGlobalRoleSuccess(body));
   });
 
   it('should allow unguarded queries to be accessed if the user has the globally-required role', async () => {

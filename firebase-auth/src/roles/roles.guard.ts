@@ -28,7 +28,8 @@ export class RolesGuard<Role extends string> implements CanActivate {
     }
 
     const role = this.reflector.get<Role | null | undefined>('role', context.getHandler());
-    const requiredRoles = [this.globalRole, role].filter(isDefined);
+    const ignoreGlobalRole = this.reflector.get<boolean>('ignore-global-role', context.getHandler()) ?? false;
+    const requiredRoles = [ignoreGlobalRole ? null : this.globalRole, role].filter(isDefined);
     if (requiredRoles.length === 0) {
       return true;
     }
