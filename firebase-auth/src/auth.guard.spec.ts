@@ -1,71 +1,22 @@
 import { FirebaseModule, FirebaseService } from '@apposing/nest-firebase';
-import { INestApplication } from '@nestjs/common';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { GraphQLModule, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { Test, TestingModule } from '@nestjs/testing';
 import { auth } from 'firebase-admin';
-import { unlinkSync } from 'fs';
-import { join } from 'path';
-import supertest from 'supertest';
 import { AuthGuard } from './auth.guard';
-import { Public } from './public.decorator';
 import DecodedIdToken = auth.DecodedIdToken;
 
-@Resolver()
-class TestResolver {
-  @Public()
-  @Query(() => Int)
-  publicQuery(): number {
-    return 1;
-  }
-
-  @Query(() => Int)
-  privateQuery(): number {
-    return 1;
-  }
-
-  @Public()
-  @Mutation(() => Int)
-  publicMutation(): number {
-    return 1;
-  }
-
-  @Mutation(() => Int)
-  privateMutation(): number {
-    return 1;
-  }
-}
-
-function expectQuerySuccess(body: unknown): void {
-  const b = body as { data?: { publicQuery: number }; errors?: unknown[] };
-  expect(b.data?.publicQuery).toEqual(1);
-  expect(b.errors).toBeUndefined();
-}
-
-function expectQueryFailure(body: unknown): void {
-  const b = body as { data?: { privateQuery: number }; errors?: unknown[] };
-  expect(b.data).toBeNull();
-  expect(b.errors).toBeDefined();
-  expect(b.errors).toHaveLength(1);
-}
-
-function expectMutationSuccess(body: unknown): void {
-  const b = body as { data?: { publicMutation: number }; errors?: unknown[] };
-  expect(b.data?.publicMutation).toEqual(1);
-  expect(b.errors).toBeUndefined();
-}
-
-function expectMutationFailure(body: unknown): void {
-  const b = body as { data?: { privateMutation: number }; errors?: unknown[] };
-  expect(b.data).toBeNull();
-  expect(b.errors).toBeDefined();
-  expect(b.errors).toHaveLength(1);
-}
-
 describe('AuthGuard', () => {
-  const autoSchemaFile = 'AuthGuard.test.graphql';
   let app: INestApplication;
+  let reflector: Reflector;
   let firebaseService: FirebaseService;
+  let authGuard: AuthGuard;
+  const executionContext = {
+    getHandler: () => {
+      return {};
+    },
+  } as ExecutionContext;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -73,98 +24,95 @@ describe('AuthGuard', () => {
         FirebaseModule.forRoot({
           name: expect.getState().currentTestName,
         }),
-        GraphQLModule.forRoot({
-          autoSchemaFile,
-        }),
       ],
-      providers: [TestResolver],
     }).compile();
+    app = module.createNestApplication();
+    reflector = app.get(Reflector);
     firebaseService = module.get(FirebaseService);
     app = module.createNestApplication();
-    app.useGlobalGuards(new AuthGuard(app.get(Reflector), firebaseService));
-    await app.init();
+    authGuard = new AuthGuard(reflector, firebaseService);
   });
 
   afterEach(() => {
-    unlinkSync(join(process.cwd(), autoSchemaFile));
+    jest.resetAllMocks();
   });
 
-  it('should allow public queries to be used without authentication', () => {
-    return supertest(app.getHttpServer())
-      .post('/graphql')
-      .send({
-        operationName: null,
-        query: `
-          query {
-            publicQuery
-          }
-        `,
-      })
-      .expect(200)
-      .expect(({ body }: { body: unknown }) => expectQuerySuccess(body));
-  });
-  it('should cause an error to be returned if a private query is used without authentication', () => {
-    return supertest(app.getHttpServer())
-      .post('/graphql')
-      .send({
-        operationName: null,
-        query: `
-          query {
-            privateQuery
-          }
-        `,
-      })
-      .expect(200)
-      .expect(({ body }: { body: unknown }) => expectQueryFailure(body));
-  });
-  it('should allow public mutations to be used without authentication', () => {
-    return supertest(app.getHttpServer())
-      .post('/graphql')
-      .send({
-        operationName: null,
-        query: `
-          mutation {
-            publicMutation
-          }
-        `,
-      })
-      .expect(200)
-      .expect(({ body }: { body: unknown }) => expectMutationSuccess(body));
-  });
-  it('should cause an error to be returned if a private mutation is used without authentication', () => {
-    return supertest(app.getHttpServer())
-      .post('/graphql')
-      .send({
-        operationName: null,
-        query: `
-          mutation {
-            privateMutation
-          }
-        `,
-      })
-      .expect(200)
-      .expect(({ body }: { body: unknown }) => expectMutationFailure(body));
-  });
-  it('should attempt to verify the user if an authentication header is supplied in the bearer token format', () => {
-    const verifyIdTokenFn = jest.spyOn(firebaseService.auth(), 'verifyIdToken').mockResolvedValue({
-      uid: 'abc123',
-    } as DecodedIdToken);
-    const token = 'abc123';
+  describe('canActivate', () => {
+    function mockGqlExecutionContext(authHeader?: string): void {
+      jest.spyOn(GqlExecutionContext, 'create').mockImplementation(
+        () =>
+          ({
+            getContext: () => ({
+              req: {
+                header: () => authHeader,
+              },
+            }),
+          } as GqlExecutionContext),
+      );
+    }
 
-    return supertest(app.getHttpServer())
-      .post('/graphql')
-      .auth(token, { type: 'bearer' })
-      .send({
-        operationName: null,
-        query: `
-          query {
-            privateQuery
-          }
-        `,
-      })
-      .expect(200)
-      .expect(() => {
-        expect(verifyIdTokenFn).toHaveBeenCalledWith(token);
-      });
+    it('should return true if the target is marked as public', async () => {
+      jest.spyOn(reflector, 'get').mockImplementation(() => true);
+
+      const result = await authGuard.canActivate(executionContext);
+
+      expect(result).toEqual(true);
+    });
+
+    it('should return false if the context has no associated request', async () => {
+      jest.spyOn(reflector, 'get').mockImplementation(() => false);
+      mockGqlExecutionContext();
+
+      const result = await authGuard.canActivate(executionContext);
+
+      expect(result).toEqual(false);
+    });
+
+    it("should return false if the context has no associated 'Authorization' header", async () => {
+      jest.spyOn(reflector, 'get').mockImplementation(() => false);
+      mockGqlExecutionContext();
+
+      const result = await authGuard.canActivate(executionContext);
+
+      expect(result).toEqual(false);
+    });
+
+    it("should return false if the 'Authorization' header does not contain a token", async () => {
+      jest.spyOn(reflector, 'get').mockImplementation(() => false);
+      mockGqlExecutionContext('Bearer');
+
+      const result = await authGuard.canActivate(executionContext);
+
+      expect(result).toEqual(false);
+    });
+
+    it("should return false if the 'Authorization' header contains an invalid token", async () => {
+      jest.spyOn(reflector, 'get').mockImplementation(() => false);
+      mockGqlExecutionContext('Bearer ~@:<~:~@?>');
+      const result = await authGuard.canActivate(executionContext);
+
+      expect(result).toEqual(false);
+    });
+
+    it('should return false if the token cannot be verified', async () => {
+      jest.spyOn(reflector, 'get').mockImplementation(() => false);
+      mockGqlExecutionContext('Bearer abc123');
+      jest.spyOn(firebaseService.auth(), 'verifyIdToken').mockRejectedValue({});
+      jest.spyOn(console, 'error').mockImplementation();
+
+      const result = await authGuard.canActivate(executionContext);
+
+      expect(result).toEqual(false);
+    });
+
+    it('should return true if the token was successfully verified', async () => {
+      jest.spyOn(reflector, 'get').mockImplementation(() => false);
+      mockGqlExecutionContext('Bearer abc123');
+      jest.spyOn(firebaseService.auth(), 'verifyIdToken').mockResolvedValue({} as DecodedIdToken);
+
+      const result = await authGuard.canActivate(executionContext);
+
+      expect(result).toEqual(true);
+    });
   });
 });

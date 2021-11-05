@@ -17,13 +17,22 @@ export class AuthGuard implements CanActivate {
 
     const ctx = GqlExecutionContext.create(context).getContext();
 
+    const authHeader = ctx.req?.header('Authorization');
+    if (!authHeader) {
+      return false;
+    }
     const matches = this.bearerTokenPattern.exec(ctx.req.header('Authorization'));
     if (!matches) {
       return false;
     }
     const token = matches[1];
 
-    ctx.firebaseUser = await this.firebaseService.auth().verifyIdToken(token);
+    try {
+      ctx.firebaseUser = await this.firebaseService.auth().verifyIdToken(token);
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
     return true;
   }
 }
