@@ -1,4 +1,4 @@
-import { AppOptions } from 'firebase-admin/lib/firebase-namespace-api';
+import { AppOptions } from 'firebase-admin/app';
 
 export interface FirebaseModuleOptions {
   name?: string;

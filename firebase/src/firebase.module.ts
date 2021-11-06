@@ -1,9 +1,8 @@
 import { DynamicModule, Module, ValueProvider } from '@nestjs/common';
-import { app, initializeApp } from 'firebase-admin';
+import { App, initializeApp } from 'firebase-admin/app';
 import { FIREBASE_APP } from './firebase.constants';
 import { FirebaseModuleOptions } from './firebase.module-options';
 import { FirebaseService } from './firebase.service';
-import App = app.App;
 
 @Module({})
 export class FirebaseModule {

@@ -1,6 +1,6 @@
 {
   "name": "@apposing/nest-firebase-cloud-messaging",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Provides a Nest.js wrapper for functionality around Firebase Cloud Messaging",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -36,9 +36,9 @@
   },
   "homepage": "https://github.com/apposing/apposing-nest-libs/firebase-cloud-messaging#readme",
   "peerDependencies": {
-    "@apposing/nest-firebase": "^1.0.0",
+    "@apposing/nest-firebase": "^2.0.0",
     "@nestjs/common": "^8.0.0",
-    "firebase-admin": "^9.0.0"
+    "firebase-admin": "^10.0.0"
   },
   "devDependencies": {
     "@nestjs/testing": "8.1.2",
@@ -49,6 +49,7 @@
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.25.2",
     "jest": "27.3.1",
+    "jest-node-exports-resolver": "1.1.2",
     "prettier": "2.4.1",
     "rimraf": "3.0.2",
     "ts-jest": "27.0.7",

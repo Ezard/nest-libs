@@ -2,6 +2,7 @@ import { FirebaseService } from '@apposing/nest-firebase';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { getAuth } from 'firebase-admin/auth';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -28,7 +29,7 @@ export class AuthGuard implements CanActivate {
     const token = matches[1];
 
     try {
-      ctx.firebaseUser = await this.firebaseService.auth().verifyIdToken(token);
+      ctx.firebaseUser = await getAuth(this.firebaseService.app).verifyIdToken(token);
     } catch (e) {
       console.error(e);
       return false;

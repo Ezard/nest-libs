@@ -3,13 +3,12 @@ import { INestApplication } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GraphQLModule, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Test, TestingModule } from '@nestjs/testing';
-import { auth } from 'firebase-admin';
+import { DecodedIdToken, getAuth } from 'firebase-admin/auth';
 import { unlinkSync } from 'fs';
 import { join } from 'path';
 import supertest from 'supertest';
 import { AuthGuard } from './auth.guard';
 import { Public } from './public.decorator';
-import DecodedIdToken = auth.DecodedIdToken;
 
 @Resolver()
 class TestResolver {
@@ -146,7 +145,7 @@ describe('AuthGuard', () => {
       .expect(({ body }: { body: unknown }) => expectMutationFailure(body));
   });
   it('should attempt to verify the user if an authentication header is supplied in the bearer token format', () => {
-    const verifyIdTokenFn = jest.spyOn(firebaseService.auth(), 'verifyIdToken').mockResolvedValue({
+    const verifyIdTokenFn = jest.spyOn(getAuth(firebaseService.app), 'verifyIdToken').mockResolvedValue({
       uid: 'abc123',
     } as DecodedIdToken);
     const token = 'abc123';

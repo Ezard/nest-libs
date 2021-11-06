@@ -1,9 +1,8 @@
 import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { auth } from 'firebase-admin';
+import { DecodedIdToken } from 'firebase-admin/auth';
 import { CustomClaims } from '../custom-claims';
-import DecodedIdToken = auth.DecodedIdToken;
 
 function userHasRequiredRoles<Role extends string>(userRoles: Role[], requiredRoles: Role[]): boolean {
   return requiredRoles.every(role => userRoles.includes(role));

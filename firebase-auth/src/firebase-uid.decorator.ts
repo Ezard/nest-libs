@@ -1,8 +1,7 @@
 import { createParamDecorator } from '@nestjs/common';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { auth } from 'firebase-admin/lib/auth';
-import DecodedIdToken = auth.DecodedIdToken;
+import { DecodedIdToken } from 'firebase-admin/auth';
 
 export const FirebaseUid: () => ParameterDecorator = createParamDecorator(
   (_, executionContextHost: ExecutionContextHost) => {

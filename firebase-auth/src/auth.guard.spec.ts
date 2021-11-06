@@ -3,9 +3,8 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Test, TestingModule } from '@nestjs/testing';
-import { auth } from 'firebase-admin';
+import { DecodedIdToken, getAuth } from 'firebase-admin/auth';
 import { AuthGuard } from './auth.guard';
-import DecodedIdToken = auth.DecodedIdToken;
 
 describe('AuthGuard', () => {
   let app: INestApplication;
@@ -97,7 +96,7 @@ describe('AuthGuard', () => {
     it('should return false if the token cannot be verified', async () => {
       jest.spyOn(reflector, 'get').mockImplementation(() => false);
       mockGqlExecutionContext('Bearer abc123');
-      jest.spyOn(firebaseService.auth(), 'verifyIdToken').mockRejectedValue({});
+      jest.spyOn(getAuth(firebaseService.app), 'verifyIdToken').mockRejectedValue({});
       jest.spyOn(console, 'error').mockImplementation();
 
       const result = await authGuard.canActivate(executionContext);
@@ -108,7 +107,7 @@ describe('AuthGuard', () => {
     it('should return true if the token was successfully verified', async () => {
       jest.spyOn(reflector, 'get').mockImplementation(() => false);
       mockGqlExecutionContext('Bearer abc123');
-      jest.spyOn(firebaseService.auth(), 'verifyIdToken').mockResolvedValue({} as DecodedIdToken);
+      jest.spyOn(getAuth(firebaseService.app), 'verifyIdToken').mockResolvedValue({} as DecodedIdToken);
 
       const result = await authGuard.canActivate(executionContext);
 

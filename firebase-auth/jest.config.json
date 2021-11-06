@@ -8,6 +8,7 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "resolver": "jest-node-exports-resolver",
   "coverageDirectory": "../coverage",
   "testEnvironment": "node",
   "collectCoverageFrom": [
