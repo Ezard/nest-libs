@@ -18,6 +18,7 @@ jobs:
           - firebase
           - firebase-auth
           - firebase-cloud-messaging
+          - google-cloud-trace
     name: CI (${{ matrix.package }})
     steps:
       - name: Configure Git

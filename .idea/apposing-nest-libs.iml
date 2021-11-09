@@ -6,6 +6,10 @@
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/firebase/dist" />
       <excludeFolder url="file://$MODULE_DIR$/firebase/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/firebase-cloud-messaging/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/firebase-cloud-messaging/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/google-cloud-trace/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/google-cloud-trace/dist" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
