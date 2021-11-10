@@ -1,6 +1,6 @@
 {
   "name": "@apposing/nest-google-cloud-trace",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Nest.js wrapper around Google Cloud Trace, with a GraphQL plugin",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
