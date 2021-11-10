@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { trace } from '@opentelemetry/api';
+import { SpanOptions, trace } from '@opentelemetry/api';
 import { GoogleCloudTraceModule } from './google-cloud-trace.module';
 import { GoogleCloudTraceService } from './google-cloud-trace.service';
 
@@ -52,21 +52,43 @@ describe('GoogleCloudTracePlugin', () => {
       });
     });
 
-    it('should add the supplied attributes to the span', () => {
+    it('should add the supplied options to the span', () => {
       const name = 'foo';
-      const attributes = {
-        bar: 'baz',
+      const startTime = 12345;
+      const options: SpanOptions = {
+        startTime,
       };
       const tracer = trace.getTracer('default');
       jest.spyOn(trace, 'getTracer').mockReturnValue(tracer);
       const startSpanSpy = jest.spyOn(tracer, 'startSpan');
 
-      googleCloudTraceService.startSpan(name, attributes);
+      googleCloudTraceService.startSpan(name, options);
+
+      expect(startSpanSpy).toHaveBeenCalledWith(expect.anything(), {
+        startTime,
+        attributes: {
+          service: expect.getState().currentTestName,
+        },
+      });
+    });
+
+    it('should merge the supplied attributes with the default service attribute', () => {
+      const name = 'foo';
+      const options: SpanOptions = {
+        attributes: {
+          foo: 'bar',
+        },
+      };
+      const tracer = trace.getTracer('default');
+      jest.spyOn(trace, 'getTracer').mockReturnValue(tracer);
+      const startSpanSpy = jest.spyOn(tracer, 'startSpan');
+
+      googleCloudTraceService.startSpan(name, options);
 
       expect(startSpanSpy).toHaveBeenCalledWith(expect.anything(), {
         attributes: {
           service: expect.getState().currentTestName,
-          ...attributes,
+          foo: 'bar',
         },
       });
     });
