@@ -28,7 +28,7 @@ export class GoogleCloudTraceModule implements OnApplicationBootstrap, OnApplica
         GoogleCloudTraceService,
         GoogleCloudTracePlugin,
       ],
-      exports: [TRACE_SERVICE, GoogleCloudTracePlugin],
+      exports: [TRACE_SERVICE, GoogleCloudTraceService, GoogleCloudTracePlugin],
     };
   }
 
