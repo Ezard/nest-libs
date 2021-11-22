@@ -43,8 +43,8 @@
     "firebase-admin": "^10.0.0"
   },
   "devDependencies": {
-    "@nestjs/platform-express": "8.2.2",
-    "@nestjs/testing": "8.2.2",
+    "@nestjs/platform-express": "8.2.3",
+    "@nestjs/testing": "8.2.3",
     "@types/jest": "27.0.3",
     "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "5.4.0",
