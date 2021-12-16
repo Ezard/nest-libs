@@ -4,6 +4,7 @@ import {
   GoogleCloudTraceModuleOptions,
   GoogleCloudTracePlugin,
   GoogleCloudTraceService,
+  RootSpan,
   SPAN_EXPORTER,
   TRACE_SERVICE,
   TRACER_PROVIDER,
@@ -30,6 +31,10 @@ describe('index', () => {
 
   it('should export GoogleCloudTraceService', () => {
     expect(GoogleCloudTraceService).toBeDefined();
+  });
+
+  it('should export RootSpan', () => {
+    expect(RootSpan).toBeDefined();
   });
 
   it('should export SPAN_EXPORTER', () => {

@@ -3,7 +3,7 @@ import { SpanOptions, trace } from '@opentelemetry/api';
 import { GoogleCloudTraceModule } from './google-cloud-trace.module';
 import { GoogleCloudTraceService } from './google-cloud-trace.service';
 
-describe('GoogleCloudTracePlugin', () => {
+describe('GoogleCloudTraceService', () => {
   describe('startSpan', () => {
     let googleCloudTraceService: GoogleCloudTraceService;
 
@@ -34,7 +34,7 @@ describe('GoogleCloudTracePlugin', () => {
 
       googleCloudTraceService.startSpan(name);
 
-      expect(startSpanSpy).toHaveBeenCalledWith(name, expect.anything());
+      expect(startSpanSpy).toHaveBeenCalledWith(name, expect.anything(), undefined);
     });
 
     it("should set the trace's service attribute to be injected value", () => {
@@ -45,11 +45,15 @@ describe('GoogleCloudTracePlugin', () => {
 
       googleCloudTraceService.startSpan(name);
 
-      expect(startSpanSpy).toHaveBeenCalledWith(expect.anything(), {
-        attributes: {
-          service: expect.getState().currentTestName,
+      expect(startSpanSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          attributes: {
+            service: expect.getState().currentTestName,
+          },
         },
-      });
+        undefined,
+      );
     });
 
     it('should add the supplied options to the span', () => {
@@ -64,12 +68,16 @@ describe('GoogleCloudTracePlugin', () => {
 
       googleCloudTraceService.startSpan(name, options);
 
-      expect(startSpanSpy).toHaveBeenCalledWith(expect.anything(), {
-        startTime,
-        attributes: {
-          service: expect.getState().currentTestName,
+      expect(startSpanSpy).toHaveBeenCalledWith(
+        name,
+        {
+          startTime,
+          attributes: {
+            service: expect.getState().currentTestName,
+          },
         },
-      });
+        undefined,
+      );
     });
 
     it('should merge the supplied attributes with the default service attribute', () => {
@@ -85,12 +93,28 @@ describe('GoogleCloudTracePlugin', () => {
 
       googleCloudTraceService.startSpan(name, options);
 
-      expect(startSpanSpy).toHaveBeenCalledWith(expect.anything(), {
-        attributes: {
-          service: expect.getState().currentTestName,
-          foo: 'bar',
+      expect(startSpanSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          attributes: {
+            service: expect.getState().currentTestName,
+            foo: 'bar',
+          },
         },
-      });
+        undefined,
+      );
+    });
+
+    it('should use the context associated with the parent span if one is provided', () => {
+      const tracer = trace.getTracer('default');
+      jest.spyOn(trace, 'getTracer').mockReturnValue(tracer);
+      const startSpanSpy = jest.spyOn(tracer, 'startSpan');
+
+      const parentSpan = googleCloudTraceService.startSpan('Parent');
+      googleCloudTraceService.startSpan('', undefined, parentSpan);
+      parentSpan.end();
+
+      expect(startSpanSpy).toHaveBeenNthCalledWith(2, expect.anything(), expect.anything(), expect.anything());
     });
   });
 });

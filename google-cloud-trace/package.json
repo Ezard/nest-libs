@@ -1,6 +1,6 @@
 {
   "name": "@apposing/nest-google-cloud-trace",
-  "version": "1.0.3",
+  "version": "1.2.2",
   "description": "A Nest.js wrapper around Google Cloud Trace, with a GraphQL plugin",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -37,24 +37,30 @@
   "homepage": "https://github.com/apposing/apposing-nest-libs/google-cloud-trace#readme",
   "dependencies": {
     "@google-cloud/opentelemetry-cloud-trace-exporter": "1.0.0",
-    "@opentelemetry/api": "1.0.3",
     "@opentelemetry/sdk-trace-base": "1.0.1",
     "apollo-server-plugin-base": "3.4.0"
   },
   "peerDependencies": {
-    "@nestjs/common": "^8.0.0"
+    "@nestjs/common": "^8.0.0",
+    "@nestjs/core": "^8.0.0",
+    "@nestjs/graphql": "9.1.2",
+    "@opentelemetry/api": "^1.0.0"
   },
   "devDependencies": {
+    "@nestjs/platform-express": "8.2.3",
     "@nestjs/testing": "8.2.3",
     "@types/jest": "27.0.3",
+    "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "5.7.0",
     "@typescript-eslint/parser": "5.7.0",
+    "apollo-server-express": "3.5.0",
     "eslint": "8.4.1",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.25.3",
     "jest": "27.4.5",
     "prettier": "2.5.1",
     "rimraf": "3.0.2",
+    "supertest": "6.1.6",
     "ts-jest": "27.1.1",
     "typescript": "4.5.4"
   }

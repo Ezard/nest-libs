@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Span, SpanOptions, trace, Tracer } from '@opentelemetry/api';
+import { context, Span, SpanOptions, trace, Tracer } from '@opentelemetry/api';
 import { TRACE_SERVICE } from './constants';
 
 @Injectable()
@@ -10,13 +10,18 @@ export class GoogleCloudTraceService {
     return trace.getTracer('default');
   }
 
-  startSpan(name: string, options?: SpanOptions): Span {
-    return GoogleCloudTraceService.tracer.startSpan(name, {
-      ...options,
-      attributes: {
-        service: this.traceService,
-        ...options?.attributes,
+  startSpan(name: string, options?: SpanOptions, parentSpan?: Span): Span {
+    const ctx = parentSpan ? trace.setSpan(context.active(), parentSpan) : undefined;
+    return GoogleCloudTraceService.tracer.startSpan(
+      name,
+      {
+        ...options,
+        attributes: {
+          service: this.traceService,
+          ...options?.attributes,
+        },
       },
-    });
+      ctx,
+    );
   }
 }

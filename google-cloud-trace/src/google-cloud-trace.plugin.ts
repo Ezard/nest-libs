@@ -20,7 +20,12 @@ export class GoogleCloudTracePlugin implements ApolloServerPlugin {
         requestContext: GraphQLRequestContextDidResolveOperation<ContextWithRootSpan>,
       ): Promise<void> {
         if (requestContext.operationName && requestContext.operationName !== 'IntrospectionQuery') {
-          requestContext.context.rootSpan = googleCloudTraceService.startSpan(requestContext.operationName);
+          requestContext.context.rootSpan = googleCloudTraceService.startSpan(requestContext.operationName, {
+            root: true,
+            attributes: {
+              'http.method': 'GraphQL',
+            },
+          });
         }
       },
       async willSendResponse(

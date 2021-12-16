@@ -37,7 +37,10 @@ describe('GoogleCloudTracePlugin', () => {
       context,
     } as GraphQLRequestContextDidResolveOperation<ContextWithRootSpan>);
 
-    expect(googleCloudTraceService.startSpan).toHaveBeenCalledWith(operationName);
+    expect(googleCloudTraceService.startSpan).toHaveBeenCalledWith(operationName, {
+      attributes: { 'http.method': 'GraphQL' },
+      root: true,
+    });
     expect(context.rootSpan).toBeDefined();
   });
 
