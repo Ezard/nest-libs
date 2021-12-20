@@ -7,7 +7,6 @@ on:
 
 jobs:
   ci:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os:
@@ -18,7 +17,9 @@ jobs:
           - firebase
           - firebase-auth
           - firebase-cloud-messaging
+          - google-cloud-pubsub
           - google-cloud-trace
+    runs-on: ${{ matrix.os }}
     name: CI (${{ matrix.package }})
     steps:
       - name: Configure Git

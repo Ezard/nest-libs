@@ -17,6 +17,7 @@ jobs:
           - firebase
           - firebase-auth
           - firebase-cloud-messaging
+          - google-cloud-pubsub
           - google-cloud-trace
     runs-on: ${{ matrix.os }}
     name: Cache Dependencies (${{ matrix.package }})
