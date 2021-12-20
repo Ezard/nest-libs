@@ -1,6 +1,6 @@
 import { PubSub } from '@google-cloud/pubsub';
 import { Module } from '@nestjs/common';
-import { GoogleCloudPubsubService } from './google-cloud-pubsub.service';
+import { GoogleCloudPubSubService } from './google-cloud-pubsub.service';
 
 @Module({
   providers: [
@@ -8,8 +8,8 @@ import { GoogleCloudPubsubService } from './google-cloud-pubsub.service';
       provide: PubSub,
       useValue: new PubSub(),
     },
-    GoogleCloudPubsubService,
+    GoogleCloudPubSubService,
   ],
-  exports: [GoogleCloudPubsubService],
+  exports: [GoogleCloudPubSubService],
 })
 export class GoogleCloudPubSubModule {}

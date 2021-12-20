@@ -3,14 +3,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { hostname } from 'os';
 import { GoogleCloudPubSubSubscription } from './google-cloud-pubsub-subscription';
 import { GoogleCloudPubSubModule } from './google-cloud-pubsub.module';
-import { GoogleCloudPubsubService } from './google-cloud-pubsub.service';
+import { GoogleCloudPubSubService } from './google-cloud-pubsub.service';
 
 jest.mock('@google-cloud/pubsub');
 jest.mock('./google-cloud-pubsub-subscription');
 
 describe('GoogleCloudPubSubService', () => {
   let pubSub: PubSub;
-  let pubSubService: GoogleCloudPubsubService;
+  let pubSubService: GoogleCloudPubSubService;
 
   beforeEach(async () => {
     pubSub = new PubSub();
@@ -20,7 +20,7 @@ describe('GoogleCloudPubSubService', () => {
       .overrideProvider(PubSub)
       .useValue(pubSub)
       .compile();
-    pubSubService = module.get(GoogleCloudPubsubService);
+    pubSubService = module.get(GoogleCloudPubSubService);
   });
 
   afterEach(() => {

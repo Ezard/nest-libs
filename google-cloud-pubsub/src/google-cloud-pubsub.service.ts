@@ -9,7 +9,7 @@ function getSubscriptionFullName(name: string, shared: boolean): string {
 }
 
 @Injectable()
-export class GoogleCloudPubsubService implements BeforeApplicationShutdown {
+export class GoogleCloudPubSubService implements BeforeApplicationShutdown {
   private readonly transientSubscriptions: GoogleCloudPubSubSubscription[] = [];
 
   constructor(private readonly pubSub: PubSub) {}
