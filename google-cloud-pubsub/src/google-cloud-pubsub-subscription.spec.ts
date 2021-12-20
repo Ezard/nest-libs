@@ -1,6 +1,6 @@
 import { Message, PubSub, SubscriberOptions, Subscription } from '@google-cloud/pubsub';
 import { Subscriber } from '@google-cloud/pubsub/build/src/subscriber';
-import { PubSubSubscription } from './pubsub-subscription';
+import { GoogleCloudPubSubSubscription } from './google-cloud-pubsub-subscription';
 
 jest.mock('@google-cloud/pubsub');
 
@@ -21,7 +21,7 @@ function sleep(millis: number): Promise<void> {
 describe('PubSubSubscription', () => {
   describe('asyncIterator', () => {
     let callback: (message: Message) => void;
-    let pubSubSubscription: PubSubSubscription;
+    let pubSubSubscription: GoogleCloudPubSubSubscription;
 
     beforeEach(() => {
       const subscription = {
@@ -36,7 +36,7 @@ describe('PubSubSubscription', () => {
           // unused
         },
       } as Subscription;
-      pubSubSubscription = new PubSubSubscription(subscription);
+      pubSubSubscription = new GoogleCloudPubSubSubscription(subscription);
     });
 
     it('should return a message when the subscription receives it', async () => {
@@ -88,11 +88,11 @@ describe('PubSubSubscription', () => {
 
   describe('delete', () => {
     let subscription: Subscription;
-    let pubSubSubscription: PubSubSubscription;
+    let pubSubSubscription: GoogleCloudPubSubSubscription;
 
     beforeEach(() => {
       subscription = new Subscription({} as PubSub, 'foo');
-      pubSubSubscription = new PubSubSubscription(subscription);
+      pubSubSubscription = new GoogleCloudPubSubSubscription(subscription);
     });
 
     it("should close the subscription if it's not already closed", async () => {

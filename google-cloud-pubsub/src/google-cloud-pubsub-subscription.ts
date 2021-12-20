@@ -9,7 +9,7 @@ class Deferred<T> {
   });
 }
 
-export class PubSubSubscription implements AsyncIterable<Message> {
+export class GoogleCloudPubSubSubscription implements AsyncIterable<Message> {
   private readonly deferreds: Deferred<IteratorResult<Message>>[] = [];
   private readonly values: Message[] = [];
   private closed = false;

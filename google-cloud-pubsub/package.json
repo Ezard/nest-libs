@@ -1,6 +1,6 @@
 {
   "name": "@apposing/nest-google-cloud-pubsub",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Nest.js wrapper around Google Cloud Pub/Sub",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

@@ -1,7 +1,7 @@
 import { PubSub, Subscription, Topic } from '@google-cloud/pubsub';
 import { BeforeApplicationShutdown, Injectable } from '@nestjs/common';
 import { hostname } from 'os';
-import { PubSubSubscription } from './pubsub-subscription';
+import { GoogleCloudPubSubSubscription } from './google-cloud-pubsub-subscription';
 
 function getSubscriptionFullName(name: string, shared: boolean): string {
   const postfix = shared ? 'shared' : hostname();
@@ -9,8 +9,8 @@ function getSubscriptionFullName(name: string, shared: boolean): string {
 }
 
 @Injectable()
-export class PubSubService implements BeforeApplicationShutdown {
-  private readonly transientSubscriptions: PubSubSubscription[] = [];
+export class GoogleCloudPubsubService implements BeforeApplicationShutdown {
+  private readonly transientSubscriptions: GoogleCloudPubSubSubscription[] = [];
 
   constructor(private readonly pubSub: PubSub) {}
 
@@ -57,10 +57,14 @@ export class PubSubService implements BeforeApplicationShutdown {
     }
   }
 
-  async observeSubscription(topicName: string, subscriptionName: string, shared = false): Promise<PubSubSubscription> {
+  async observeSubscription(
+    topicName: string,
+    subscriptionName: string,
+    shared = false,
+  ): Promise<GoogleCloudPubSubSubscription> {
     const topic = await this.getOrCreateTopic(topicName);
     const subscription = await this.getOrCreateSubscription(topic, subscriptionName, shared);
-    const pubSubSubscription = new PubSubSubscription(subscription);
+    const pubSubSubscription = new GoogleCloudPubSubSubscription(subscription);
     if (!shared) {
       this.transientSubscriptions.push(pubSubSubscription);
     }

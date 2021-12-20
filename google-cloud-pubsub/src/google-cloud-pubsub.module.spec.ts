@@ -1,10 +1,10 @@
 import { Test } from '@nestjs/testing';
-import { PubSubModule } from './pubsub.module';
+import { GoogleCloudPubSubModule } from './google-cloud-pubsub.module';
 
-describe('PubSubModule', () => {
+describe('GoogleCloudPubSubModule', () => {
   it('should initialise the module without errors', async () => {
     const module = Test.createTestingModule({
-      imports: [PubSubModule],
+      imports: [GoogleCloudPubSubModule],
     }).compile();
 
     await expect(module).resolves.toBeDefined();

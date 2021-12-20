@@ -1,3 +1,3 @@
-export * from './pubsub.module';
-export * from './pubsub.service';
-export * from './pubsub-subscription';
+export * from './google-cloud-pubsub.module';
+export * from './google-cloud-pubsub.service';
+export * from './google-cloud-pubsub-subscription';

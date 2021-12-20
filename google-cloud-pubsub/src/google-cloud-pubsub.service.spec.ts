@@ -1,26 +1,26 @@
 import { PubSub, Subscription, Topic } from '@google-cloud/pubsub';
 import { Test, TestingModule } from '@nestjs/testing';
 import { hostname } from 'os';
-import { PubSubSubscription } from './pubsub-subscription';
-import { PubSubModule } from './pubsub.module';
-import { PubSubService } from './pubsub.service';
+import { GoogleCloudPubSubSubscription } from './google-cloud-pubsub-subscription';
+import { GoogleCloudPubSubModule } from './google-cloud-pubsub.module';
+import { GoogleCloudPubsubService } from './google-cloud-pubsub.service';
 
 jest.mock('@google-cloud/pubsub');
-jest.mock('./pubsub-subscription');
+jest.mock('./google-cloud-pubsub-subscription');
 
-describe('PubSubService', () => {
+describe('GoogleCloudPubSubService', () => {
   let pubSub: PubSub;
-  let pubSubService: PubSubService;
+  let pubSubService: GoogleCloudPubsubService;
 
   beforeEach(async () => {
     pubSub = new PubSub();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PubSubModule],
+      imports: [GoogleCloudPubSubModule],
     })
       .overrideProvider(PubSub)
       .useValue(pubSub)
       .compile();
-    pubSubService = module.get(PubSubService);
+    pubSubService = module.get(GoogleCloudPubsubService);
   });
 
   afterEach(() => {
@@ -284,7 +284,7 @@ describe('PubSubService', () => {
       await pubSubService.observeSubscription('baz', 'foo', true);
 
       expect(pubSub.createTopic).not.toHaveBeenCalled();
-      expect(PubSubSubscription).toHaveBeenCalledWith(subscription);
+      expect(GoogleCloudPubSubSubscription).toHaveBeenCalledWith(subscription);
     });
 
     it('should create a new topic if one does not exist', async () => {
@@ -297,7 +297,7 @@ describe('PubSubService', () => {
       await pubSubService.observeSubscription('baz', 'foo', true);
 
       expect(pubSub.createTopic).toHaveBeenCalled();
-      expect(PubSubSubscription).toHaveBeenCalledWith(subscription);
+      expect(GoogleCloudPubSubSubscription).toHaveBeenCalledWith(subscription);
     });
 
     it('should use an existing shared subscription if one exists', async () => {
@@ -309,7 +309,7 @@ describe('PubSubService', () => {
       await pubSubService.observeSubscription('baz', 'bar', true);
 
       expect(topic.createSubscription).not.toHaveBeenCalled();
-      expect(PubSubSubscription).toHaveBeenCalledWith(subscription);
+      expect(GoogleCloudPubSubSubscription).toHaveBeenCalledWith(subscription);
     });
 
     it('should use an existing non-shared subscription if one exists', async () => {
@@ -321,7 +321,7 @@ describe('PubSubService', () => {
       await pubSubService.observeSubscription('baz', 'bar', false);
 
       expect(topic.createSubscription).not.toHaveBeenCalled();
-      expect(PubSubSubscription).toHaveBeenCalledWith(subscription);
+      expect(GoogleCloudPubSubSubscription).toHaveBeenCalledWith(subscription);
     });
 
     it('should create a new shared subscription if one does not exist', async () => {
@@ -336,7 +336,7 @@ describe('PubSubService', () => {
       await pubSubService.observeSubscription('baz', 'bar', true);
 
       expect(createSubscription).toHaveBeenCalled();
-      expect(PubSubSubscription).toHaveBeenCalledWith(subscription);
+      expect(GoogleCloudPubSubSubscription).toHaveBeenCalledWith(subscription);
     });
 
     it('should create a new non-shared subscription if one does not exist', async () => {
@@ -351,7 +351,7 @@ describe('PubSubService', () => {
       await pubSubService.observeSubscription('baz', 'bar', false);
 
       expect(createSubscription).toHaveBeenCalled();
-      expect(PubSubSubscription).toHaveBeenCalledWith(subscription);
+      expect(GoogleCloudPubSubSubscription).toHaveBeenCalledWith(subscription);
     });
 
     it('should default to using a non-shared subscription', async () => {
