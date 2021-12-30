@@ -49,7 +49,7 @@
   "devDependencies": {
     "@nestjs/platform-express": "8.2.4",
     "@nestjs/testing": "8.2.4",
-    "@types/jest": "27.0.3",
+    "@types/jest": "27.4.0",
     "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "5.8.1",
     "@typescript-eslint/parser": "5.8.1",
