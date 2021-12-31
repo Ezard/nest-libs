@@ -38,7 +38,7 @@
   "dependencies": {
     "@google-cloud/opentelemetry-cloud-trace-exporter": "1.0.0",
     "@opentelemetry/sdk-trace-base": "1.0.1",
-    "apollo-server-plugin-base": "3.4.0"
+    "apollo-server-plugin-base": "3.5.0"
   },
   "peerDependencies": {
     "@nestjs/common": "^8.0.0",
