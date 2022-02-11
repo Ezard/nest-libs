@@ -1,4 +1,5 @@
 import { FirebaseModule, FirebaseService } from '@apposing/nest-firebase';
+import { ApolloDriver } from '@nestjs/apollo';
 import { INestApplication } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GraphQLModule, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
@@ -73,6 +74,7 @@ describe('AuthGuard', () => {
           name: expect.getState().currentTestName,
         }),
         GraphQLModule.forRoot({
+          driver: ApolloDriver,
           autoSchemaFile,
         }),
       ],

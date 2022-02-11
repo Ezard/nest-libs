@@ -1,3 +1,4 @@
+import { ApolloDriver } from '@nestjs/apollo';
 import { INestApplication } from '@nestjs/common';
 import { GraphQLModule, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -39,6 +40,7 @@ describe('RootSpan', () => {
           service: expect.getState().currentTestName,
         }),
         GraphQLModule.forRootAsync({
+          driver: ApolloDriver,
           useFactory: (googleCloudTracePlugin: GoogleCloudTracePlugin) => ({
             autoSchemaFile,
             plugins: [googleCloudTracePlugin],

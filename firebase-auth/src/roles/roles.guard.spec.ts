@@ -1,3 +1,4 @@
+import { ApolloDriver } from '@nestjs/apollo';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext, GraphQLModule, Int, Query, Resolver } from '@nestjs/graphql';
@@ -97,6 +98,7 @@ describe('RolesGuard', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         GraphQLModule.forRoot({
+          driver: ApolloDriver,
           autoSchemaFile,
         }),
       ],

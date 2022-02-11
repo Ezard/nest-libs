@@ -1,6 +1,6 @@
 {
   "name": "@apposing/nest-firebase-auth",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Provides a Nest.js wrapper for functionality around Firebase Auth, specifically guards and decorators",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -39,10 +39,11 @@
     "@apposing/nest-firebase": "^2.0.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
-    "@nestjs/graphql": "^9.0.0",
+    "@nestjs/graphql": "^10.0.0",
     "firebase-admin": "^10.0.0"
   },
   "devDependencies": {
+    "@nestjs/apollo": "10.0.0",
     "@nestjs/platform-express": "8.2.6",
     "@nestjs/testing": "8.2.6",
     "@types/jest": "27.4.0",
