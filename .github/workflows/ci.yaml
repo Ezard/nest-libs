@@ -37,7 +37,7 @@ jobs:
               - '${{ matrix.package }}/**/*'
       - name: Setup Node.js for use with actions
         if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Setup dependency cache
