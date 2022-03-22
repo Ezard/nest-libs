@@ -43,7 +43,7 @@ jobs:
       - name: Setup dependency cache
         if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ matrix.package }}/node_modules
           key: ${{ matrix.os }}-node-${{ matrix.node-version }}-${{ hashFiles(env.PACKAGE_LOCK_PATH) }}
