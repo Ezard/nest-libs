@@ -1,0 +1,31 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "ts"
+  ],
+  "rootDir": ".",
+  "testRegex": ".(e2e-)?spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "runner": "groups",
+  "coverageDirectory": "../coverage",
+  "testEnvironment": "node",
+  "collectCoverageFrom": [
+    "**/*.ts"
+  ],
+  "coveragePathIgnorePatterns": [
+    "index.ts",
+    "bin.ts",
+    ".spec.ts",
+    ".e2e-spec.ts"
+  ],
+  "coverageThreshold": {
+    "global": {
+      "branches": 100,
+      "functions": 100,
+      "lines": 100,
+      "statements": 100
+    }
+  }
+}

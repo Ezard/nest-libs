@@ -6,6 +6,18 @@ on:
       - master
 
 jobs:
+  configure-database-service:
+    name: Configure Database Service
+    runs-on: ubuntu-20.04
+    outputs:
+      services: ${{ steps.set-services.outputs.services }}
+      empty: ${{ steps.set-services.outputs.empty }}
+    steps:
+      - id: set-services
+        name: Set Services
+        run: |
+          echo "::set-output name=services::{\"postgres\":{\"image\":\"postgres:13\",\"env\":{\"POSTGRES_USER\":\"postgres\",\"POSTGRES_PASSWORD\":\"password\"},\"ports\":[\"5432/tcp\"],\"options\":\"--health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5\"}}"
+          echo "::set-output name=empty::{\"alpine\":{\"image\":\"alpine\"}}"
   ci:
     strategy:
       matrix:
@@ -14,12 +26,15 @@ jobs:
         node-version:
           - 16
         package:
+          - database-testing
           - firebase
           - firebase-auth
           - firebase-cloud-messaging
           - google-cloud-pubsub
           - google-cloud-trace
     runs-on: ${{ matrix.os }}
+    needs: configure-database-service
+    services: ${{ matrix.package == 'database-testing' && fromJSON(needs.configure-database-service.outputs.services) || fromJSON(needs.configure-database-service.outputs.empty) }}
     name: CI (${{ matrix.package }})
     steps:
       - name: Configure Git
@@ -69,6 +84,9 @@ jobs:
         if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
         run: npm run test:unit:coverage
         working-directory: ${{ matrix.package }}
+        env:
+          DB_PORT: ${{ job.services.postgres.ports[5432] }}
+          TEST_DATABASE_NAME: foo
       - name: Build
         if: ${{ steps.filter.outputs[matrix.package] == 'true' }}
         run: npm run build

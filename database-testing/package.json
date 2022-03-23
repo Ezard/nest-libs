@@ -1,0 +1,62 @@
+{
+  "name": "@apposing/nest-database-testing",
+  "version": "0.1.0",
+  "description": "Utilities for integration testing Prisma-based Nest.js apps",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "exports": {
+    "require": "./dist/cjs/index.js",
+    "import": "./dist/esm/index.js",
+    "default": "./dist/esm/index.js"
+  },
+  "types": "dist/types/index.d.ts",
+  "sideEffects": false,
+  "bin": {
+    "setup-test-databases": "dist/cjs/bin.js"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc --project tsconfig.build-cjs.json",
+    "build:esm": "tsc --project tsconfig.build-esm.json",
+    "lint": "npm run lint:code && npm run lint:style",
+    "lint:code": "eslint src",
+    "lint:style": "prettier --check src",
+    "prepublishOnly": "npm run build",
+    "pretest": "npx prisma generate",
+    "test": "npm run test:unit",
+    "test:unit": "jest --runInBand",
+    "test:unit:coverage": "npm run test -- --coverage",
+    "test:unit:watch": "npm run test -- --watch",
+    "db:migrate": "prisma migrate dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apposing/apposing-nest-libs.git"
+  },
+  "author": "Ben Ezard",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/apposing/apposing-nest-libs/issues"
+  },
+  "homepage": "https://github.com/apposing/apposing-nest-libs/database-testing#readme",
+  "peerDependencies": {
+    "@prisma/client": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "27.0.3",
+    "@typescript-eslint/eslint-plugin": "5.8.1",
+    "@typescript-eslint/parser": "5.8.1",
+    "eslint": "8.5.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.25.3",
+    "jest": "27.4.5",
+    "jest-runner-groups": "2.1.0",
+    "prettier": "2.5.1",
+    "prisma": "3.7.0",
+    "rimraf": "3.0.2",
+    "ts-jest": "27.1.2",
+    "ts-node": "10.7.0",
+    "typescript": "4.5.4"
+  }
+}
