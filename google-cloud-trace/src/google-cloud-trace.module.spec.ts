@@ -1,6 +1,7 @@
 import { TraceExporter } from '@google-cloud/opentelemetry-cloud-trace-exporter';
 import { Test } from '@nestjs/testing';
 import { BasicTracerProvider, BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { inspect } from 'util';
 import { SPAN_EXPORTER, TRACER_PROVIDER } from './constants';
 import { GoogleCloudTraceModule } from './google-cloud-trace.module';
 
@@ -34,7 +35,7 @@ describe('GoogleCloudTraceModule', () => {
       await googleCloudTraceModule.onApplicationBootstrap();
 
       expect(registerSpy).toHaveBeenCalled();
-      expect(addSpanProcessorSpy).toHaveBeenCalledWith(new BatchSpanProcessor(spanExporter));
+      expect(inspect(addSpanProcessorSpy.mock.calls[0][0])).toEqual(inspect(new BatchSpanProcessor(spanExporter)));
     });
   });
 
