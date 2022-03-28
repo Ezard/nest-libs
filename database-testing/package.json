@@ -51,7 +51,7 @@
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.25.3",
     "jest": "27.5.1",
-    "jest-runner-groups": "2.1.0",
+    "jest-runner-groups": "2.2.0",
     "prettier": "2.6.1",
     "prisma": "3.11.1",
     "rimraf": "3.0.2",
