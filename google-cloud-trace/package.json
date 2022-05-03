@@ -50,7 +50,7 @@
     "@nestjs/apollo": "10.0.9",
     "@nestjs/platform-express": "8.4.4",
     "@nestjs/testing": "8.4.4",
-    "@types/jest": "27.4.1",
+    "@types/jest": "27.5.0",
     "@types/supertest": "2.0.12",
     "@typescript-eslint/eslint-plugin": "5.22.0",
     "@typescript-eslint/parser": "5.22.0",
