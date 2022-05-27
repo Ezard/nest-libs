@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/apposing/apposing-nest-libs/google-cloud-pubsub#readme",
   "peerDependencies": {
-    "@google-cloud/pubsub": "^2.0.0",
+    "@google-cloud/pubsub": "^2.0.0 || ^3.0.0",
     "@nestjs/common": "^8.0.0"
   },
   "devDependencies": {
