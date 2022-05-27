@@ -1,6 +1,6 @@
 {
   "name": "@apposing/nest-google-cloud-pubsub",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "A Nest.js wrapper around Google Cloud Pub/Sub",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -36,10 +36,12 @@
   },
   "homepage": "https://github.com/apposing/apposing-nest-libs/google-cloud-pubsub#readme",
   "peerDependencies": {
-    "@google-cloud/pubsub": "^2.0.0 || ^3.0.0",
+    "@google-cloud/pubsub": "^3.0.0",
     "@nestjs/common": "^8.0.0"
   },
   "devDependencies": {
+    "@google-cloud/pubsub": "3.0.0",
+    "@nestjs/common": "8.4.5",
     "@nestjs/testing": "8.4.5",
     "@types/jest": "27.5.1",
     "@typescript-eslint/eslint-plugin": "5.26.0",
