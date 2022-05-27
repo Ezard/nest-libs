@@ -43,7 +43,7 @@
     "firebase-admin": "^10.0.0"
   },
   "devDependencies": {
-    "@nestjs/apollo": "10.0.12",
+    "@nestjs/apollo": "10.0.13",
     "@nestjs/platform-express": "8.4.5",
     "@nestjs/testing": "8.4.5",
     "@types/jest": "27.5.1",
