@@ -48,8 +48,8 @@
   },
   "devDependencies": {
     "@nestjs/apollo": "10.0.14",
-    "@nestjs/platform-express": "8.4.6",
-    "@nestjs/testing": "8.4.6",
+    "@nestjs/platform-express": "8.4.7",
+    "@nestjs/testing": "8.4.7",
     "@types/jest": "28.1.1",
     "@types/supertest": "2.0.12",
     "@typescript-eslint/eslint-plugin": "5.28.0",
