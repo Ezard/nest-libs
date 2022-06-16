@@ -6,34 +6,65 @@ import { getAuth } from 'firebase-admin/auth';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  private readonly bearerTokenPattern = /Bearer\s([a-zA-Z0-9._-]+)/;
+  private readonly basicTokenPattern = /Basic\s([a-zA-Z\d._-]+)/;
+  private readonly bearerTokenPattern = /Bearer\s([a-zA-Z\d._-]+)/;
 
   public constructor(private readonly reflector: Reflector, private readonly firebaseService: FirebaseService) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.get<boolean>('public', context.getHandler());
-    if (isPublic) {
-      return true;
-    }
+  private isPublic(context: ExecutionContext): boolean {
+    return this.reflector.get<boolean | undefined>('public', context.getHandler()) === true;
+  }
 
-    const ctx = GqlExecutionContext.create(context).getContext();
+  private isBasicAuthValid(context: ExecutionContext): boolean {
+    const graphqlContext = GqlExecutionContext.create(context).getContext();
 
-    const authHeader = ctx.req?.header('Authorization');
-    if (!authHeader) {
+    if (!graphqlContext.req) {
       return false;
     }
-    const matches = this.bearerTokenPattern.exec(ctx.req.header('Authorization'));
-    if (!matches) {
+
+    const basicAuth = this.reflector.get<{ username: string; password: string } | undefined>(
+      'basic-auth',
+      context.getHandler(),
+    );
+    if (basicAuth === undefined) {
       return false;
     }
-    const token = matches[1];
+    const basicAuthMatches = this.basicTokenPattern.exec(graphqlContext.req.header('Authorization'));
+    if (!basicAuthMatches) {
+      return false;
+    }
+    const basicAuthToken = basicAuthMatches[1];
+    const [username, password] = Buffer.from(basicAuthToken, 'base64').toString('utf-8').split(':');
+    return basicAuth.username === username && basicAuth.password === password;
+  }
+
+  private async isBearerValid(context: ExecutionContext): Promise<boolean> {
+    const graphqlContext = GqlExecutionContext.create(context).getContext();
+
+    if (!graphqlContext.req) {
+      return false;
+    }
+
+    const bearerTokenMatches = this.bearerTokenPattern.exec(graphqlContext.req.header('Authorization'));
+    if (!bearerTokenMatches) {
+      return false;
+    }
+    const bearerToken = bearerTokenMatches[1];
 
     try {
-      ctx.firebaseUser = await getAuth(this.firebaseService.app).verifyIdToken(token);
+      graphqlContext.firebaseUser = await getAuth(this.firebaseService.app).verifyIdToken(bearerToken);
+      return true;
     } catch (e) {
       console.error(e);
       return false;
     }
-    return true;
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.isPublic(context);
+    const isBasicAuthValid = this.isBasicAuthValid(context);
+    const isBearerValid = await this.isBearerValid(context);
+
+    return isPublic || isBasicAuthValid || isBearerValid;
   }
 }

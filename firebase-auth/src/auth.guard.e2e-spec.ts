@@ -9,6 +9,7 @@ import { unlinkSync } from 'fs';
 import { join } from 'path';
 import supertest from 'supertest';
 import { AuthGuard } from './auth.guard';
+import { BasicAuth } from './basic-auth.decorator';
 import { Public } from './public.decorator';
 
 @Resolver()
@@ -24,6 +25,12 @@ class TestResolver {
     return 1;
   }
 
+  @BasicAuth('foo', 'bar')
+  @Query(() => Int)
+  basicAuthQuery(): number {
+    return 1;
+  }
+
   @Public()
   @Mutation(() => Int)
   publicMutation(): number {
@@ -32,6 +39,12 @@ class TestResolver {
 
   @Mutation(() => Int)
   privateMutation(): number {
+    return 1;
+  }
+
+  @BasicAuth('foo', 'bar')
+  @Mutation(() => Int)
+  basicAuthMutation(): number {
     return 1;
   }
 }
@@ -145,6 +158,60 @@ describe('AuthGuard', () => {
       })
       .expect(200)
       .expect(({ body }: { body: unknown }) => expectMutationFailure(body));
+  });
+  it('should allow queries if the correct basic auth credentials are supplied', () => {
+    return supertest(app.getHttpServer())
+      .post('/graphql')
+      .auth('foo', 'bar', { type: 'basic' })
+      .send({
+        operationName: null,
+        query: `
+          query {
+            basicAuthQuery
+          }
+        `,
+      })
+      .expect(200)
+      .expect(({ body }: { body: { data?: { basicAuthQuery: number }; errors?: unknown[] } }) => {
+        expect(body.data?.basicAuthQuery).toEqual(1);
+        expect(body.errors).toBeUndefined();
+      });
+  });
+  it('should allow mutations if the correct basic auth credentials are supplied', () => {
+    return supertest(app.getHttpServer())
+      .post('/graphql')
+      .auth('foo', 'bar', { type: 'basic' })
+      .send({
+        operationName: null,
+        query: `
+          mutation {
+            basicAuthMutation
+          }
+        `,
+      })
+      .expect(200)
+      .expect(({ body }: { body: { data?: { basicAuthMutation: number }; errors?: unknown[] } }) => {
+        expect(body.data?.basicAuthMutation).toEqual(1);
+        expect(body.errors).toBeUndefined();
+      });
+  });
+  it('should cause an error to be returned if the incorrect basic auth credentials are supplied', () => {
+    return supertest(app.getHttpServer())
+      .post('/graphql')
+      .auth('user', 'pass', { type: 'basic' })
+      .send({
+        operationName: null,
+        query: `
+          query {
+            basicAuthQuery
+          }
+        `,
+      })
+      .expect(200)
+      .expect(({ body }: { body: { data?: { basicAuthQuery: number }; errors?: unknown[] } }) => {
+        expect(body.data?.basicAuthQuery).toBeUndefined();
+        expect(body.errors).toHaveLength(1);
+      });
   });
   it('should attempt to verify the user if an authentication header is supplied in the bearer token format', () => {
     const verifyIdTokenFn = jest.spyOn(getAuth(firebaseService.app), 'verifyIdToken').mockResolvedValue({

@@ -12,9 +12,12 @@ describe('AuthGuard', () => {
   let firebaseService: FirebaseService;
   let authGuard: AuthGuard;
   const executionContext = {
-    getHandler: () => {
-      return {};
-    },
+    getHandler: () => ({}),
+    switchToHttp: () => ({
+      getRequest: () => ({
+        header: () => undefined,
+      }),
+    }),
   } as ExecutionContext;
 
   beforeEach(async () => {
@@ -36,86 +39,151 @@ describe('AuthGuard', () => {
     jest.resetAllMocks();
   });
 
+  function mockMetadata(metadata?: { public?: boolean; basicAuth?: { username: string; password: string } }): void {
+    jest.spyOn(reflector, 'get').mockImplementation(key => {
+      switch (key) {
+        case 'public':
+          return metadata?.public;
+        case 'basic-auth':
+          return metadata?.basicAuth;
+        default:
+          return undefined;
+      }
+    });
+  }
+
+  function mockRequest(authHeader?: string): { header: () => string | undefined } {
+    return {
+      header: () => authHeader,
+    };
+  }
+
+  function mockContext(request?: { header: () => string | undefined }): void {
+    jest.spyOn(GqlExecutionContext, 'create').mockImplementation(
+      () =>
+        ({
+          getContext: () => ({
+            req: request,
+          }),
+        } as GqlExecutionContext),
+    );
+  }
+
   describe('canActivate', () => {
-    function mockRequest(authHeader?: string): { header: () => string | undefined } {
-      return {
-        header: () => authHeader,
-      };
-    }
+    describe('Public', () => {
+      it('should return true if the target is marked as public', async () => {
+        mockMetadata({ public: true });
+        mockContext();
 
-    function mockGqlExecutionContext(request?: { header: () => string | undefined }): void {
-      jest.spyOn(GqlExecutionContext, 'create').mockImplementation(
-        () =>
-          ({
-            getContext: () => ({
-              req: request,
-            }),
-          } as GqlExecutionContext),
-      );
-    }
+        const result = await authGuard.canActivate(executionContext);
 
-    it('should return true if the target is marked as public', async () => {
-      jest.spyOn(reflector, 'get').mockImplementation(() => true);
-
-      const result = await authGuard.canActivate(executionContext);
-
-      expect(result).toEqual(true);
+        expect(result).toEqual(true);
+      });
     });
 
-    it('should return false if the context has no associated request', async () => {
-      jest.spyOn(reflector, 'get').mockImplementation(() => false);
-      mockGqlExecutionContext();
+    describe('Basic Auth', () => {
+      it('should return false if the context has no associated request', async () => {
+        mockMetadata({ basicAuth: { username: 'foo', password: 'bar' } });
+        mockContext();
 
-      const result = await authGuard.canActivate(executionContext);
+        const result = await authGuard.canActivate(executionContext);
 
-      expect(result).toEqual(false);
+        expect(result).toEqual(false);
+      });
+
+      it("should return false if the context has no associated 'Authorization' header", async () => {
+        mockMetadata({ basicAuth: { username: 'foo', password: 'bar' } });
+        mockContext(mockRequest());
+
+        const result = await authGuard.canActivate(executionContext);
+
+        expect(result).toEqual(false);
+      });
+
+      it("should return false if the 'Authorization' header does not contain a value", async () => {
+        mockMetadata({ basicAuth: { username: 'foo', password: 'bar' } });
+        mockContext(mockRequest('Basic'));
+
+        const result = await authGuard.canActivate(executionContext);
+
+        expect(result).toEqual(false);
+      });
+
+      it('should return false if the username and password do not match', async () => {
+        mockMetadata({ basicAuth: { username: 'foo', password: 'bar' } });
+        mockContext(mockRequest('Basic dXNlcjpwYXNz'));
+
+        const result = await authGuard.canActivate(executionContext);
+
+        expect(result).toEqual(false);
+      });
+
+      it('should return true if the username and password match', async () => {
+        mockMetadata({ basicAuth: { username: 'foo', password: 'bar' } });
+        mockContext(mockRequest('Basic Zm9vOmJhcg=='));
+
+        const result = await authGuard.canActivate(executionContext);
+
+        expect(result).toEqual(true);
+      });
     });
 
-    it("should return false if the context has no associated 'Authorization' header", async () => {
-      jest.spyOn(reflector, 'get').mockImplementation(() => false);
-      mockGqlExecutionContext(mockRequest());
+    describe('Bearer Token', () => {
+      it('should return false if the context has no associated request', async () => {
+        mockMetadata();
+        mockContext();
 
-      const result = await authGuard.canActivate(executionContext);
+        const result = await authGuard.canActivate(executionContext);
 
-      expect(result).toEqual(false);
-    });
+        expect(result).toEqual(false);
+      });
 
-    it("should return false if the 'Authorization' header does not contain a token", async () => {
-      jest.spyOn(reflector, 'get').mockImplementation(() => false);
-      mockGqlExecutionContext(mockRequest('Bearer'));
+      it("should return false if the context has no associated 'Authorization' header", async () => {
+        mockMetadata();
+        mockContext(mockRequest());
 
-      const result = await authGuard.canActivate(executionContext);
+        const result = await authGuard.canActivate(executionContext);
 
-      expect(result).toEqual(false);
-    });
+        expect(result).toEqual(false);
+      });
 
-    it("should return false if the 'Authorization' header contains an invalid token", async () => {
-      jest.spyOn(reflector, 'get').mockImplementation(() => false);
-      mockGqlExecutionContext(mockRequest('Bearer ~@:<~:~@?>'));
-      const result = await authGuard.canActivate(executionContext);
+      it("should return false if the 'Authorization' header does not contain a token", async () => {
+        mockMetadata();
+        mockContext(mockRequest('Bearer'));
 
-      expect(result).toEqual(false);
-    });
+        const result = await authGuard.canActivate(executionContext);
 
-    it('should return false if the token cannot be verified', async () => {
-      jest.spyOn(reflector, 'get').mockImplementation(() => false);
-      mockGqlExecutionContext(mockRequest('Bearer abc123'));
-      jest.spyOn(getAuth(firebaseService.app), 'verifyIdToken').mockRejectedValue({});
-      jest.spyOn(console, 'error').mockImplementation();
+        expect(result).toEqual(false);
+      });
 
-      const result = await authGuard.canActivate(executionContext);
+      it("should return false if the 'Authorization' header contains an invalid token", async () => {
+        mockMetadata();
+        mockContext(mockRequest('Bearer ~@:<~:~@?>'));
+        const result = await authGuard.canActivate(executionContext);
 
-      expect(result).toEqual(false);
-    });
+        expect(result).toEqual(false);
+      });
 
-    it('should return true if the token was successfully verified', async () => {
-      jest.spyOn(reflector, 'get').mockImplementation(() => false);
-      mockGqlExecutionContext(mockRequest('Bearer abc123'));
-      jest.spyOn(getAuth(firebaseService.app), 'verifyIdToken').mockResolvedValue({} as DecodedIdToken);
+      it('should return false if the token cannot be verified', async () => {
+        mockMetadata();
+        mockContext(mockRequest('Bearer abc123'));
+        jest.spyOn(getAuth(firebaseService.app), 'verifyIdToken').mockRejectedValue({});
+        jest.spyOn(console, 'error').mockImplementation();
 
-      const result = await authGuard.canActivate(executionContext);
+        const result = await authGuard.canActivate(executionContext);
 
-      expect(result).toEqual(true);
+        expect(result).toEqual(false);
+      });
+
+      it('should return true if the token was successfully verified', async () => {
+        mockMetadata();
+        mockContext(mockRequest('Bearer abc123'));
+        jest.spyOn(getAuth(firebaseService.app), 'verifyIdToken').mockResolvedValue({} as DecodedIdToken);
+
+        const result = await authGuard.canActivate(executionContext);
+
+        expect(result).toEqual(true);
+      });
     });
   });
 });
