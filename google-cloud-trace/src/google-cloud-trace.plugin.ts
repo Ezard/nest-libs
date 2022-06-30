@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Plugin } from '@nestjs/apollo';
 import { Span } from '@opentelemetry/api';
 import {
   ApolloServerPlugin,
@@ -10,7 +10,7 @@ import { GoogleCloudTraceService } from './google-cloud-trace.service';
 
 export type ContextWithRootSpan = { rootSpan?: Span };
 
-@Injectable()
+@Plugin()
 export class GoogleCloudTracePlugin implements ApolloServerPlugin {
   constructor(private readonly googleCloudTraceService: GoogleCloudTraceService) {}
 
