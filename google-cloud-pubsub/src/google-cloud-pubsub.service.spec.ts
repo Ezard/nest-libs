@@ -15,7 +15,7 @@ describe('GoogleCloudPubSubService', () => {
   beforeEach(async () => {
     pubSub = new PubSub();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [GoogleCloudPubSubModule],
+      imports: [GoogleCloudPubSubModule.forRoot(), GoogleCloudPubSubModule],
     })
       .overrideProvider(PubSub)
       .useValue(pubSub)

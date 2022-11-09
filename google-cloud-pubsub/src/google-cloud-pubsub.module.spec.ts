@@ -4,7 +4,7 @@ import { GoogleCloudPubSubModule } from './google-cloud-pubsub.module';
 describe('GoogleCloudPubSubModule', () => {
   it('should initialise the module without errors', async () => {
     const module = Test.createTestingModule({
-      imports: [GoogleCloudPubSubModule],
+      imports: [GoogleCloudPubSubModule.forRoot(), GoogleCloudPubSubModule],
     }).compile();
 
     await expect(module).resolves.toBeDefined();

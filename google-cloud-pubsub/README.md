@@ -6,6 +6,9 @@
 
 ### Usage
 
+Add `GoogleCloudPubSubModule.forRoot()` to your main module's imports array,
+and then add `GoogleCloudPubSubModule` to the imports array of any module where you wish to use `GoogleCloudPubSubService`
+
 Observing a subscription returns an async generator, which can be used with `for await...of` syntax, e.g.
 
 ```typescript
