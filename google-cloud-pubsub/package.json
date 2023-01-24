@@ -40,7 +40,7 @@
     "@nestjs/common": "^8.0.0"
   },
   "devDependencies": {
-    "@google-cloud/pubsub": "3.2.1",
+    "@google-cloud/pubsub": "3.3.0",
     "@nestjs/common": "8.4.7",
     "@nestjs/testing": "8.4.7",
     "@types/jest": "28.1.6",
